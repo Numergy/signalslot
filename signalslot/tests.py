@@ -64,3 +64,9 @@ class SignalIsCompatibleTestCases(unittest.TestCase):
             pass
 
         self.assertFalse(self.signal.is_compatible(test_slot))
+
+    def test_connect_wrong_slot_signature_with_local(self):
+        def test_slot():
+            firewall = None
+
+        self.assertFalse(self.signal.is_compatible(test_slot))
