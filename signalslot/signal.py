@@ -24,6 +24,9 @@ class Signal(object):
 
     def disconnect(self, slot):
         """ Disconnect a slot from a signal. """
+        if not self.is_connected(slot):
+            raise exceptions.NotConnected()
+
         self.slots.pop(self.slots.index(slot))
 
     def is_connected(self, slot):
