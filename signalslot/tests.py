@@ -47,6 +47,14 @@ class NoArgumentsSignalTestCase(unittest.TestCase):
         self.slot.assert_called_once_with()
         slot_b.assert_called_once_with()
 
+    def test_disconnect(self):
+        self.signal.connect(self.slot)
+        self.signal.disconnect(self.slot)
+
+        self.signal.emit()
+
+        self.assertEqual(self.slot.call_count, 0)
+
 
 class SignalIsCompatibleTestCases(unittest.TestCase):
     def setUp(self):
