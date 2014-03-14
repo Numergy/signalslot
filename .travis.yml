@@ -1,0 +1,7 @@
+language: python
+python: 2.7
+  - TOX_ENV=py27
+  - TOX_ENV=py33
+  - TOX_ENV=pep8
+script:
+  - tox -e $TOX_ENV
