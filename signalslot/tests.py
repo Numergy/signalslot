@@ -22,3 +22,10 @@ class SignalSlotTestCase(unittest.TestCase):
 
         with self.assertRaises(signalslot.AlreadyConnected):
             self.signal.connect(self.slot)
+
+    def test_emit(self):
+        self.signal.connect(self.slot)
+
+        self.signal.emit()
+
+        self.slot.assert_called_once_with()

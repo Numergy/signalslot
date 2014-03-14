@@ -15,3 +15,8 @@ class Signal(object):
     def connected(self, slot):
         """ Returns True if slot is connected, False otherwise.  """
         return slot in self.slots
+
+    def emit(self):
+        """ Call all slots connected to this signal. """
+        for slot in self.slots:
+            slot()
