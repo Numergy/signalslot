@@ -83,3 +83,15 @@ class SignalIsCompatibleTestCases(unittest.TestCase):
             firewall = None
 
         self.assertFalse(self.signal.is_compatible(test_slot))
+
+
+class ArgumentedSignalTestCase(unittest.TestCase):
+    @mock.patch.object(signalslot.Signal, 'is_compatible')
+    def test_emit_with_arguments(self, is_compatible):
+        is_compatible.return_value = True
+
+        signal = signalslot.Signal(args=['firewall'])
+        slot = mock.MagicMock()
+        signal.connect(slot)
+        signal.emit(firewall='foo')
+        slot.assert_called_once_with(firewall='foo')
