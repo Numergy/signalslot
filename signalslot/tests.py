@@ -37,6 +37,16 @@ class NoArgumentsSignalTestCase(unittest.TestCase):
 
         self.slot.assert_called_once_with()
 
+    def test_several_slots(self):
+        self.signal.connect(self.slot)
+        slot_b = mock.MagicMock()
+        self.signal.connect(slot_b)
+
+        self.signal.emit()
+
+        self.slot.assert_called_once_with()
+        slot_b.assert_called_once_with()
+
 
 class SignalIsCompatibleTestCases(unittest.TestCase):
     def setUp(self):
