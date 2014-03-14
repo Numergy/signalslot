@@ -41,6 +41,12 @@ class SignalIsCompatibleTestCases(unittest.TestCase):
 
         self.assertTrue(self.signal.is_compatible(test_slot))
 
+    def test_with_too_many_argument(self):
+        def test_slot(firewall, bar):
+            pass
+
+        self.assertFalse(self.signal.is_compatible(test_slot))
+
     def test_with_one_argument_with_keyword(self):
         def test_slot(firewall=None):
             pass
