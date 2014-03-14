@@ -23,6 +23,13 @@ class NoArgumentsSignalTestCase(unittest.TestCase):
         with self.assertRaises(signalslot.AlreadyConnected):
             self.signal.connect(self.slot)
 
+    def test_connect_incompatible_slot_raises_exception(self):
+        def foo(bar):
+            pass
+
+        with self.assertRaises(signalslot.IncompatibleSlotSignature):
+            self.signal.connect(foo)
+
     def test_emit(self):
         self.signal.connect(self.slot)
 

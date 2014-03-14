@@ -11,6 +11,9 @@ class Signal(object):
         if self.connected(slot):
             raise exceptions.AlreadyConnected()
 
+        if not self.is_compatible(slot):
+            raise exceptions.IncompatibleSlotSignature()
+
         self.slots.append(slot)
 
     def connected(self, slot):
