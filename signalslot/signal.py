@@ -24,6 +24,10 @@ class Signal(object):
         """ Disconnect a slot from a signal. """
         self.slots.pop(self.slots.index(slot))
 
+    def is_connected(self, slot):
+        """ Return True if slot is connected to this signal. """
+        return slot in self.slots
+
     def emit(self, *args, **kwargs):
         """ Call all slots connected to this signal. """
         for slot in self.slots:
