@@ -1,11 +1,16 @@
 from setuptools import setup, find_packages
 
 
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+
 setup(
     name='signalslot',
     version='0.0.1',
     description='Simple Signal/Slot implementation',
     url='https://github.com/numergy/signalslot',
+    long_description=read('README'),
     packages=find_packages(),
     include_package_data=True,
     license='GPLv3',
