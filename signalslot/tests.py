@@ -32,42 +32,35 @@ class NoArgumentsSignalTestCase(unittest.TestCase):
 
 
 class SignalIsCompatibleTestCases(unittest.TestCase):
-    def test_with_one_argument(self):
-        signal = signalslot.Signal(args=['firewall'])
+    def setUp(self):
+        self.signal = signalslot.Signal(args=['firewall'])
 
+    def test_with_one_argument(self):
         def test_slot(firewall):
             pass
 
-        self.assertTrue(signal.is_compatible(test_slot))
+        self.assertTrue(self.signal.is_compatible(test_slot))
 
     def test_with_one_argument_with_keyword(self):
-        signal = signalslot.Signal(args=['firewall'])
-
         def test_slot(firewall=None):
             pass
 
-        self.assertTrue(signal.is_compatible(test_slot))
+        self.assertTrue(self.signal.is_compatible(test_slot))
 
     def test_with_asterisk_args(self):
-        signal = signalslot.Signal(args=['firewall'])
-
         def test_slot(*args):
             pass
 
-        self.assertFalse(signal.is_compatible(test_slot))
+        self.assertFalse(self.signal.is_compatible(test_slot))
 
-    def test_with_asterisk_args(self):
-        signal = signalslot.Signal(args=['firewall'])
-
+    def test_with_asterisk_kwargs(self):
         def test_slot(**kwargs):
             pass
 
-        self.assertFalse(signal.is_compatible(test_slot))
+        self.assertFalse(self.signal.is_compatible(test_slot))
 
     def test_connect_wrong_slot_signature(self):
-        signal = signalslot.Signal(args=['firewall'])
-
         def test_slot():
             pass
 
-        self.assertFalse(signal.is_compatible(test_slot))
+        self.assertFalse(self.signal.is_compatible(test_slot))
