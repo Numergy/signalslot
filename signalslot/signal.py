@@ -1,3 +1,5 @@
+import inspect
+
 from . import exceptions
 
 
@@ -35,5 +37,4 @@ class Signal(object):
 
     def is_compatible(self, slot):
         """ Return True if slot is compatible with args of this signal. """
-        args = slot.func_code.co_varnames[:slot.func_code.co_argcount]
-        return list(args) == list(self.args)
+        return list(inspect.getargspec(slot).args) == list(self.args)

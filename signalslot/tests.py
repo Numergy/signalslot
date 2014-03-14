@@ -4,40 +4,34 @@ import unittest
 import signalslot
 
 
+@mock.patch.object(signalslot.Signal, 'is_compatible')
 class NoArgumentsSignalTestCase(unittest.TestCase):
     def setUp(self):
         self.slot = mock.MagicMock()
         self.signal = signalslot.Signal()
 
-    def test_not_connected(self):
+    def test_not_connected(self, is_compatible):
         self.assertFalse(self.signal.connected(self.slot))
 
-    def test_connected(self):
+    def test_connected(self, is_compatible):
         self.signal.connect(self.slot)
 
         self.assertTrue(self.signal.connected(self.slot))
 
-    def test_cannot_reconnect(self):
+    def test_cannot_reconnect(self, is_compatible):
         self.signal.connect(self.slot)
 
         with self.assertRaises(signalslot.AlreadyConnected):
             self.signal.connect(self.slot)
 
-    def test_connect_incompatible_slot_raises_exception(self):
-        def foo(bar):
-            pass
-
-        with self.assertRaises(signalslot.IncompatibleSlotSignature):
-            self.signal.connect(foo)
-
-    def test_emit(self):
+    def test_emit(self, is_compatible):
         self.signal.connect(self.slot)
 
         self.signal.emit()
 
         self.slot.assert_called_once_with()
 
-    def test_several_slots(self):
+    def test_several_slots(self, is_compatible):
         self.signal.connect(self.slot)
         slot_b = mock.MagicMock()
         self.signal.connect(slot_b)
@@ -47,7 +41,7 @@ class NoArgumentsSignalTestCase(unittest.TestCase):
         self.slot.assert_called_once_with()
         slot_b.assert_called_once_with()
 
-    def test_disconnect(self):
+    def test_disconnect(self, is_compatible):
         self.signal.connect(self.slot)
         self.signal.disconnect(self.slot)
 
@@ -55,7 +49,7 @@ class NoArgumentsSignalTestCase(unittest.TestCase):
 
         self.assertEqual(self.slot.call_count, 0)
 
-    def test_is_connected(self):
+    def test_is_connected(self, is_compatible):
         self.assertFalse(self.signal.is_connected(self.slot))
 
         self.signal.connect(self.slot)
@@ -66,6 +60,13 @@ class NoArgumentsSignalTestCase(unittest.TestCase):
 class SignalIsCompatibleTestCases(unittest.TestCase):
     def setUp(self):
         self.signal = signalslot.Signal(args=['firewall'])
+
+    def test_connect_incompatible_slot_raises_exception(self):
+        def foo(bar):
+            pass
+
+        with self.assertRaises(signalslot.IncompatibleSlotSignature):
+            self.signal.connect(foo)
 
     def test_with_one_argument(self):
         def test_slot(firewall):
@@ -110,8 +111,8 @@ class SignalIsCompatibleTestCases(unittest.TestCase):
         self.assertFalse(self.signal.is_compatible(test_slot))
 
 
+@mock.patch.object(signalslot.Signal, 'is_compatible')
 class ArgumentedSignalTestCase(unittest.TestCase):
-    @mock.patch.object(signalslot.Signal, 'is_compatible')
     def test_emit_with_arguments(self, is_compatible):
         is_compatible.return_value = True
 
