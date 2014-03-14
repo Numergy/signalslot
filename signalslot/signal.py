@@ -1,9 +1,15 @@
+from . import exceptions
+
+
 class Signal(object):
     def __init__(self):
         self.slots = []
 
     def connect(self, slot):
         """ Connect a slot to this signal. """
+        if self.connected(slot):
+            raise exceptions.AlreadyConnected()
+
         self.slots.append(slot)
 
     def connected(self, slot):

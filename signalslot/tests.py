@@ -16,3 +16,9 @@ class SignalSlotTestCase(unittest.TestCase):
         self.signal.connect(self.slot)
 
         self.assertTrue(self.signal.connected(self.slot))
+
+    def test_cannot_reconnect(self):
+        self.signal.connect(self.slot)
+
+        with self.assertRaises(signalslot.AlreadyConnected):
+            self.signal.connect(self.slot)
