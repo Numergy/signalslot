@@ -4,7 +4,11 @@ env:
   - TOX_ENV=py27
   - TOX_ENV=py33
   - TOX_ENV=pep8
+  - TOX_ENV=cover
 install:
-  - pip install tox
+  - pip install tox 
+  - [ "x$TOX_ENV" = 'xcover' ] && pip install coveralls
 script:
   - tox -e $TOX_ENV
+after_success:
+  - [ "x$TOX_ENV" = 'xcover' ] && coveralls
