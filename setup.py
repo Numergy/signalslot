@@ -12,7 +12,7 @@ setup(
     version='0.0.1',
     description='Simple Signal/Slot implementation',
     url='https://github.com/numergy/signalslot',
-    long_description=read('README'),
+    long_description=read('README.rst'),
     packages=find_packages(),
     include_package_data=True,
     license='GPLv3',
