@@ -91,9 +91,9 @@ boilerplate code:
         def register_observer(self, observer):
             self.observers.append(observer)
 
-        def something_happens(self, context, router):
+        def something_happens(self, some_argument):
             for observer in self.observers:
-                observer.something_happens(context, router)
+                observer.something_happens(some_argument)
 
 This implementation is a bit dumb, it doesn't check the compatibility of
 observers for example, also it's additionnal code you'd have to test.
@@ -137,7 +137,7 @@ like:
 
     from your_client.signals import something_happens
 
-    def something_happens(context, router):
+    def something_happens(some_argument):
         # ....
 
     something_happens.connect(something_happens)
