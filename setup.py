@@ -15,7 +15,7 @@ setup(
     long_description=read('README.rst'),
     packages=find_packages(),
     include_package_data=True,
-    license='GPLv3',
+    license='MIT',
     keywords='signal slot',
     install_requires=[
         'six',
