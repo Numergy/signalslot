@@ -3,3 +3,8 @@
 branch = True
 source = signalslot
 include = ./signalslot*
+
+[report]
+ignore_errors = True
+exclude_lines = 
+    pragma: no cover
