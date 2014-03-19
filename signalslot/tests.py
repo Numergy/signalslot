@@ -63,6 +63,13 @@ class NoArgumentsSignalTestCase(unittest.TestCase):
         with self.assertRaises(signalslot.NotConnected):
             self.signal.disconnect(foo)
 
+    def test_connect_once(self, is_compatible):
+        self.signal.connect_once(self.slot)
+        self.assertTrue(self.signal.is_connected(self.slot))
+
+        self.signal.connect_once(self.slot)
+        self.assertTrue(self.signal.is_connected(self.slot))
+
 
 class SignalIsCompatibleTestCases(unittest.TestCase):
     def setUp(self):

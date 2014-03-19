@@ -18,6 +18,11 @@ class Signal(object):
 
         self.slots.append(slot)
 
+    def connect_once(self, slot):
+        """ Connect a slot to this signal if not already connected. """
+        if not self.connected(slot):
+            self.connect(slot)
+
     def connected(self, slot):
         """ Returns True if slot is connected, False otherwise.  """
         return slot in self.slots
