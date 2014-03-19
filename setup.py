@@ -9,7 +9,7 @@ def read(fname):
 
 setup(
     name='signalslot',
-    version='0.0.1',
+    version='0.0.2',
     description='Simple Signal/Slot implementation',
     url='https://github.com/numergy/signalslot',
     long_description=read('README.rst'),
