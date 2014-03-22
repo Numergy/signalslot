@@ -3,14 +3,6 @@ class SignalSlotException(Exception):
     pass
 
 
-class AlreadyConnected(SignalSlotException):
-    """
-    Raised when attempting to connect a slot to a signal which is already
-    connected to that slot.
-    """
-    pass
-
-
 class IncompatibleSlotSignature(SignalSlotException):
     """
     Raised when attempting to connect a slot with a signature that is not

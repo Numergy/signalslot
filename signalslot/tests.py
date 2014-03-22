@@ -18,12 +18,6 @@ class NoArgumentsSignalTestCase(unittest.TestCase):
 
         self.assertTrue(self.signal.connected(self.slot))
 
-    def test_cannot_reconnect(self, is_compatible):
-        self.signal.connect(self.slot)
-
-        with self.assertRaises(signalslot.AlreadyConnected):
-            self.signal.connect(self.slot)
-
     def test_emit(self, is_compatible):
         self.signal.connect(self.slot)
 
@@ -63,12 +57,14 @@ class NoArgumentsSignalTestCase(unittest.TestCase):
         with self.assertRaises(signalslot.NotConnected):
             self.signal.disconnect(foo)
 
-    def test_connect_once(self, is_compatible):
-        self.signal.connect_once(self.slot)
+    def test_connect(self, is_compatible):
+        self.signal.connect(self.slot)
         self.assertTrue(self.signal.is_connected(self.slot))
 
-        self.signal.connect_once(self.slot)
+        self.signal.connect(self.slot)
         self.assertTrue(self.signal.is_connected(self.slot))
+
+        self.assertEqual(len(self.signal.slots), 1)
 
 
 class SignalIsCompatibleTestCases(unittest.TestCase):

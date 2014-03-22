@@ -10,18 +10,11 @@ class Signal(object):
 
     def connect(self, slot):
         """ Connect a slot to this signal. """
-        if self.connected(slot):
-            raise exceptions.AlreadyConnected()
-
         if not self.is_compatible(slot):
             raise exceptions.IncompatibleSlotSignature()
 
-        self.slots.append(slot)
-
-    def connect_once(self, slot):
-        """ Connect a slot to this signal if not already connected. """
         if not self.connected(slot):
-            self.connect(slot)
+            self.slots.append(slot)
 
     def connected(self, slot):
         """ Returns True if slot is connected, False otherwise.  """
