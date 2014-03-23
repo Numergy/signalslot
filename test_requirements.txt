@@ -1,4 +1,4 @@
 mock
 pep8
-nose
+pytest
 coverage
