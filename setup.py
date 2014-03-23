@@ -1,4 +1,5 @@
 import os.path
+import signalslot
 
 from setuptools import setup, find_packages
 
@@ -9,7 +10,7 @@ def read(fname):
 
 setup(
     name='signalslot',
-    version='0.0.2',
+    version=signalslot.__version__,
     description='Simple Signal/Slot implementation',
     url='https://github.com/numergy/signalslot',
     long_description=read('README.rst'),

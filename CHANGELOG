@@ -1,3 +1,6 @@
+0.0.3 Removed signal.connect_once(), simplified the code and improved
+      documentation.
+
 0.0.2 Added Signal.connect_once()
 
 0.0.1 First release.
