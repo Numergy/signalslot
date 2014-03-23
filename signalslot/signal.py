@@ -85,7 +85,7 @@ class Signal(object):
         ...     return 'got something'
         ...
         >>> def make_something(**kwargs):
-        ...     print 'I will not be called'
+        ...     print('I will not be called')
         ...
         >>> need_something.connect(get_something)
         >>> need_something.connect(make_something)
