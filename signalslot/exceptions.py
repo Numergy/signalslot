@@ -1,18 +1,15 @@
 class SignalSlotException(Exception):
-    """ Base class for all exceptions of this module. """
+    """Base class for all exceptions of this module."""
     pass
 
 
-class IncompatibleSlotSignature(SignalSlotException):
+class SlotMustAcceptKeywords(SignalSlotException):
     """
-    Raised when attempting to connect a slot with a signature that is not
-    compatible with the Signal's signature (args).
+    Raised when connecting a slot that does not accept ``**kwargs`` in its
+    signature.
     """
-    pass
+    def __init__(self, signal, slot):
+        m = 'Cannot connect %s to %s because it does not accept **kwargs' % (
+            slot, signal)
 
-
-class NotConnected(SignalSlotException):
-    """
-    Raised when attempting to disconnect a signal that is not connected.
-    """
-    pass
+        super(SlotMustAcceptKeywords, self).__init__(m)

@@ -5,6 +5,12 @@
 
 .. include:: ../README.rst
 
+.. toctree::
+   :maxdepth: 3
+
+   pattern
+   usage
+
 Indices and tables
 ==================
 

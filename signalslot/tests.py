@@ -1,133 +1,86 @@
+import pytest
 import mock
-import unittest
 
-import signalslot
+from signalslot import Signal, SlotMustAcceptKeywords
 
 
-@mock.patch.object(signalslot.Signal, 'is_compatible')
-class NoArgumentsSignalTestCase(unittest.TestCase):
-    def setUp(self):
-        self.slot = mock.MagicMock()
-        self.signal = signalslot.Signal()
+@mock.patch('signalslot.signal.inspect')
+class TestSignal(object):
+    def setup_method(self, method):
+        self.signal_a = Signal()
+        self.signal_b = Signal(args=['foo'])
 
-    def test_not_connected(self, is_compatible):
-        self.assertFalse(self.signal.connected(self.slot))
+        self.slot_a = mock.Mock(spec=lambda **kwargs: None)
+        self.slot_a.return_value = None
+        self.slot_b = mock.Mock(spec=lambda **kwargs: None)
+        self.slot_b.return_value = None
 
-    def test_connected(self, is_compatible):
-        self.signal.connect(self.slot)
+    def test_is_connected(self, inspect):
+        self.signal_a.connect(self.slot_a)
 
-        self.assertTrue(self.signal.connected(self.slot))
+        assert self.signal_a.is_connected(self.slot_a)
+        assert not self.signal_a.is_connected(self.slot_b)
+        assert not self.signal_b.is_connected(self.slot_a)
+        assert not self.signal_b.is_connected(self.slot_b)
 
-    def test_emit(self, is_compatible):
-        self.signal.connect(self.slot)
+    def test_emit_one_slot(self, inspect):
+        self.signal_a.connect(self.slot_a)
 
-        self.signal.emit()
+        self.signal_a.emit()
 
-        self.slot.assert_called_once_with()
+        self.slot_a.assert_called_once_with()
+        assert self.slot_b.call_count == 0
 
-    def test_several_slots(self, is_compatible):
-        self.signal.connect(self.slot)
-        slot_b = mock.MagicMock()
-        self.signal.connect(slot_b)
+    def test_emit_two_slots(self, inspect):
+        self.signal_a.connect(self.slot_a)
+        self.signal_a.connect(self.slot_b)
 
-        self.signal.emit()
+        self.signal_a.emit()
 
-        self.slot.assert_called_once_with()
-        slot_b.assert_called_once_with()
+        self.slot_a.assert_called_once_with()
+        self.slot_b.assert_called_once_with()
 
-    def test_disconnect(self, is_compatible):
-        self.signal.connect(self.slot)
-        self.signal.disconnect(self.slot)
+    def test_emit_one_slot_with_arguments(self, inspect):
+        self.signal_b.connect(self.slot_a)
 
-        self.signal.emit()
+        self.signal_b.emit(foo='bar')
 
-        self.assertEqual(self.slot.call_count, 0)
+        self.slot_a.assert_called_once_with(foo='bar')
+        assert self.slot_b.call_count == 0
 
-    def test_is_connected(self, is_compatible):
-        self.assertFalse(self.signal.is_connected(self.slot))
+    def test_emit_two_slots_with_arguments(self, inspect):
+        self.signal_b.connect(self.slot_a)
+        self.signal_b.connect(self.slot_b)
 
-        self.signal.connect(self.slot)
+        self.signal_b.emit(foo='bar')
 
-        self.assertTrue(self.signal.is_connected(self.slot))
+        self.slot_a.assert_called_once_with(foo='bar')
+        self.slot_b.assert_called_once_with(foo='bar')
 
-    def test_disconnect_raises_notconnected(self, is_compatible):
-        def foo():
+    def test_reconnect_does_not_duplicate(self, inspect):
+        self.signal_a.connect(self.slot_a)
+        self.signal_a.connect(self.slot_a)
+        self.signal_a.emit()
+
+        self.slot_a.assert_called_once_with()
+
+    def test_disconnect_does_not_fail_on_not_connected_slot(self, inspect):
+        self.signal_a.disconnect(self.slot_b)
+
+
+class TestSignalConnect(object):
+    def setup_method(self, method):
+        self.signal = Signal()
+
+    def test_connect_with_kwargs(self):
+        def cb(**kwargs):
             pass
 
-        with self.assertRaises(signalslot.NotConnected):
-            self.signal.disconnect(foo)
+        self.signal.connect(cb)
 
-    def test_connect(self, is_compatible):
-        self.signal.connect(self.slot)
-        self.assertTrue(self.signal.is_connected(self.slot))
-
-        self.signal.connect(self.slot)
-        self.assertTrue(self.signal.is_connected(self.slot))
-
-        self.assertEqual(len(self.signal.slots), 1)
-
-
-class SignalIsCompatibleTestCases(unittest.TestCase):
-    def setUp(self):
-        self.signal = signalslot.Signal(args=['firewall'])
-
-    def test_connect_incompatible_slot_raises_exception(self):
-        def foo(bar):
+    def test_connect_without_kwargs(self):
+        def cb():
             pass
 
-        with self.assertRaises(signalslot.IncompatibleSlotSignature):
-            self.signal.connect(foo)
-
-    def test_with_one_argument(self):
-        def test_slot(firewall):
-            pass
-
-        self.assertTrue(self.signal.is_compatible(test_slot))
-
-    def test_with_too_many_argument(self):
-        def test_slot(firewall, bar):
-            pass
-
-        self.assertFalse(self.signal.is_compatible(test_slot))
-
-    def test_with_one_argument_with_keyword(self):
-        def test_slot(firewall=None):
-            pass
-
-        self.assertTrue(self.signal.is_compatible(test_slot))
-
-    def test_with_asterisk_args(self):
-        def test_slot(*args):
-            pass
-
-        self.assertFalse(self.signal.is_compatible(test_slot))
-
-    def test_with_asterisk_kwargs(self):
-        def test_slot(**kwargs):
-            pass
-
-        self.assertFalse(self.signal.is_compatible(test_slot))
-
-    def test_connect_wrong_slot_signature(self):
-        def test_slot():
-            pass
-
-        self.assertFalse(self.signal.is_compatible(test_slot))
-
-    def test_connect_wrong_slot_signature_with_local(self):
-        def test_slot():
-            firewall = None
-
-        self.assertFalse(self.signal.is_compatible(test_slot))
-
-
-@mock.patch.object(signalslot.Signal, 'is_compatible')
-class ArgumentedSignalTestCase(unittest.TestCase):
-    def test_emit_with_arguments(self, is_compatible):
-        is_compatible.return_value = True
-
-        signal = signalslot.Signal(args=['firewall'])
-        slot = mock.MagicMock()
-        signal.connect(slot)
-        signal.emit(firewall='foo')
-        slot.assert_called_once_with(firewall='foo')
+        with pytest.raises(SlotMustAcceptKeywords):
+            self.signal.connect(cb)
