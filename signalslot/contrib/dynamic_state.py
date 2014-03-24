@@ -14,7 +14,9 @@ class DynamicState(object):
     .. py:attribute:: fetch_attribute
 
         Signal emited when a non-existent attribute is being accessed before
-        AttributeError is raised.
+        AttributeError is raised. If any slot returns a non-None value, then
+        this value will be used to set the attribute and AttributeError won't
+        be raised.
 
     The dynamic state pattern attempts to solve a problem: having a property
     fetched OAOO (Once And Only Once) by a decoupled module.
