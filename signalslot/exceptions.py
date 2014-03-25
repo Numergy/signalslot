@@ -13,3 +13,15 @@ class SlotMustAcceptKeywords(SignalSlotException):
             slot, signal)
 
         super(SlotMustAcceptKeywords, self).__init__(m)
+
+
+class QueueCantQueueNonSignalInstance(SignalSlotException):
+    """
+    Raised when trying to queue something else than a
+    :py:class:`~signalslot.signal.Signal` instance.
+    """
+    def __init__(self, queue, arg):
+        m = 'Cannot queue %s to %s because it is not a Signal instance' % (
+            arg, queue)
+
+        super(QueueCantQueueNonSignalInstance, self).__init__(m)
