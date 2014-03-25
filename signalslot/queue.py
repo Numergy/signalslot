@@ -33,7 +33,7 @@ class Queue(object):
     I did something with {'foo': 'bar'}
     """
     def __init__(self):
-        self._queue = deque()
+        self.calls = deque()
 
     def queue(self, signal, **kwargs):
         """
@@ -46,12 +46,12 @@ class Queue(object):
         if not isinstance(signal, Signal):
             raise QueueCantQueueNonSignalInstance(self, signal)
 
-        self._queue.append((signal, kwargs))
+        self.calls.append((signal, kwargs))
 
     def flush(self):
         """
         Flush a queue by emiting all signals one by one.
         """
-        while len(self._queue):
-            signal, kwargs = self._queue.popleft()
+        while len(self.calls):
+            signal, kwargs = self.calls.popleft()
             signal.emit(**kwargs)
