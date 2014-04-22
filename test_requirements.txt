@@ -2,4 +2,7 @@ mock
 pep8
 pytest
 pytest-cov
+pytest-pep8
+pytest-sugar
+pytest-xdist
 coverage

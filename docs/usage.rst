@@ -6,15 +6,3 @@ Usage
 
 .. automodule:: signalslot.signal
    :members:
-
-:py:class:`signalslot.Queue` objects
-====================================
-
-.. automodule:: signalslot.queue
-   :members:
-
-:py:class:`signalslot.contrib.dynamic_state.DynamicState`
-=========================================================
-
-.. automodule:: signalslot.contrib.dynamic_state
-   :members:
