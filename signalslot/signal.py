@@ -97,3 +97,23 @@ class Signal(object):
 
             if result is not None:
                 return result
+
+    def __eq__(self, other):
+        """
+        Return True if other has the same slots connected.
+
+        >>> a = Signal()
+        >>> b = Signal()
+        >>> a == b
+        True
+        >>> def slot(**kwargs):
+        ...    pass
+        ...
+        >>> a.connect(slot)
+        >>> a == b
+        False
+        >>> b.connect(slot)
+        >>> a == b
+        True
+        """
+        return self.slots == other.slots
