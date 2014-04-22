@@ -1,4 +1,5 @@
 mock
+eventlet
 pep8
 pytest
 pytest-cov

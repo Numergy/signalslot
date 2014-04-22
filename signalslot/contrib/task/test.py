@@ -1,0 +1,117 @@
+import pytest
+import mock
+
+import eventlet
+eventlet.monkey_patch(time=True)
+import time
+
+from signalslot import Signal, SlotMustAcceptKeywords
+from signalslot.contrib.task import Task
+
+
+class TestTask(object):
+    def setup_method(self, method):
+        self.signal = mock.Mock()
+
+    def get_task_mock(self, *methods):
+        task_mock = Task(self.signal)
+
+        for method in methods:
+            setattr(task_mock, method, mock.Mock())
+
+        return task_mock
+
+    def test_eq(self):
+        x = Task(self.signal, dict(some_kwarg='foo'))
+        y = Task(self.signal, dict(some_kwarg='foo'))
+
+        assert x == y
+
+    def test_not_eq(self):
+        x = Task(self.signal, dict(some_kwarg='foo'))
+        y = Task(self.signal, dict(some_kwarg='bar'))
+
+        assert x != y
+
+    def test_unicode(self):
+        t = Task(self.signal, dict(some_kwarg='foo'))
+
+        assert unicode(t) == "Mock: {'some_kwarg': 'foo'}"
+
+    def test_get_or_create_gets(self):
+        x = Task.get_or_create(self.signal, dict(some_kwarg='foo'))
+        y = Task.get_or_create(self.signal, dict(some_kwarg='foo'))
+
+        assert x is y
+
+    def test_get_or_create_creates(self):
+        x = Task.get_or_create(self.signal, dict(some_kwarg='foo'))
+        y = Task.get_or_create(self.signal, dict(some_kwarg='bar'))
+
+        assert x is not y
+
+    def test_do_emit(self):
+        task_mock = self.get_task_mock('_clean', '_exception', '_completed')
+
+        task_mock._do()
+
+        self.signal.emit.assert_called_once_with()
+
+    def test_do_complete(self):
+        task_mock = self.get_task_mock('_clean', '_exception', '_completed')
+
+        task_mock._do()
+
+        task_mock._exception.assert_not_called()
+        task_mock._completed.assert_called_once_with()
+        task_mock._clean.assert_called_once_with()
+
+    def test_do_exception(self):
+        task_mock = self.get_task_mock('_clean', '_exception', '_completed',
+                                       '_emit')
+
+        task_mock._emit.side_effect = Exception()
+
+        task_mock._do()
+
+        task_mock._exception.assert_call_once_with(task_mock._emit.side_effect)
+        task_mock._completed.assert_not_called()
+        task_mock._clean.assert_called_once_with()
+
+    @mock.patch('signalslot.signal.inspect')
+    def test_semaphore(self, inspect):
+        slot = mock.Mock()
+        slot.side_effect = lambda **k: time.sleep(.3)
+
+        signal = Signal('tost')
+        signal.connect(slot)
+
+        x = Task.get_or_create(signal, dict(some_kwarg='foo'))
+        y = Task.get_or_create(signal, dict(some_kwarg='foo'))
+
+        eventlet.spawn(x)
+        time.sleep(.1)
+        eventlet.spawn(y)
+        time.sleep(.1)
+
+        assert slot.call_count == 1
+        time.sleep(.4)
+        assert slot.call_count == 2
+
+    def test_call_context(self):
+        task_mock = self.get_task_mock('_clean', '_exception', '_completed',
+                                       '_emit')
+
+        task_mock._emit.side_effect = Exception()
+
+        assert task_mock.failures == 0
+        task_mock()
+        assert task_mock.failures == 1
+
+    def test_call_success(self):
+        task_mock = self.get_task_mock('_clean', '_exception', '_completed',
+                                       '_emit')
+
+        assert task_mock.failures == 0
+        task_mock()
+        assert task_mock.failures == 0

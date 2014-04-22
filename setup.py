@@ -20,6 +20,7 @@ setup(
     keywords='signal slot',
     install_requires=[
         'six',
+        'contexter',
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
