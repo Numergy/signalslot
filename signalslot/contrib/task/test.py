@@ -50,6 +50,11 @@ class TestTask(object):
 
         assert x is not y
 
+    def test_get_or_create_without_kwargs(self):
+        t = Task.get_or_create(self.signal)
+
+        assert t.kwargs == {}
+
     def test_do_emit(self):
         task_mock = self.get_task_mock('_clean', '_exception', '_completed')
 

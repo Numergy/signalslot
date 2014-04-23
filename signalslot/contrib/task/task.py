@@ -4,7 +4,7 @@ import contextlib
 
 class Task(object):
     @classmethod
-    def get_or_create(cls, signal, kwargs, logger=None):
+    def get_or_create(cls, signal, kwargs=None, logger=None):
         if not hasattr(cls, '_registry'):
             cls._registry = []
 
