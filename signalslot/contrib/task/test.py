@@ -5,7 +5,7 @@ import eventlet
 eventlet.monkey_patch(time=True)
 import time
 
-from signalslot import Signal, SlotMustAcceptKeywords
+from signalslot import Signal
 from signalslot.contrib.task import Task
 
 
