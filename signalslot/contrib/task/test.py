@@ -55,6 +55,12 @@ class TestTask(object):
 
         assert t.kwargs == {}
 
+    def test_get_or_create_uses_cls(self):
+        class Foo(Task):
+            pass
+
+        assert isinstance(Foo.get_or_create(self.signal), Foo)
+
     def test_do_emit(self):
         task_mock = self.get_task_mock('_clean', '_exception', '_completed')
 

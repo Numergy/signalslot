@@ -8,7 +8,7 @@ class Task(object):
         if not hasattr(cls, '_registry'):
             cls._registry = []
 
-        task = Task(signal, kwargs, logger=logger)
+        task = cls(signal, kwargs, logger=logger)
 
         if task not in cls._registry:
             cls._registry.append(task)
