@@ -68,6 +68,16 @@ class TestSignal(object):
         self.signal_a.disconnect(self.slot_b)
 
 
+def test_anonymous_signal_has_nice_repr():
+    signal = Signal()
+    assert repr(signal) == '<signalslot.Signal: NO_NAME>'
+
+
+def test_named_signal_has_a_nice_repr():
+    signal = Signal(name='update_stuff')
+    assert repr(signal) == '<signalslot.Signal: update_stuff>'
+
+
 class TestSignalConnect(object):
     def setup_method(self, method):
         self.signal = Signal()
