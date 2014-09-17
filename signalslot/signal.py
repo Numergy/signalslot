@@ -45,9 +45,10 @@ class Signal(object):
     >>> conf_pre_load.is_connected(yourmodule_conf)
     False
     """
-    def __init__(self, args=None):
+    def __init__(self, args=None, name=None):
         self.slots = []
         self.args = args or []
+        self.name = name
 
     def connect(self, slot):
         """
@@ -117,3 +118,6 @@ class Signal(object):
         True
         """
         return self.slots == other.slots
+
+    def __repr__(self):
+        return '<signalslot.Signal: %s>' % (self.name or 'NO_NAME')
