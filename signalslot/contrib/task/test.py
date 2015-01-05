@@ -36,7 +36,7 @@ class TestTask(object):
     def test_unicode(self):
         t = Task(self.signal, dict(some_kwarg='foo'))
 
-        assert unicode(t) == "Mock: {'some_kwarg': 'foo'}"
+        assert str(t) == "Mock: {'some_kwarg': 'foo'}"
 
     def test_get_or_create_gets(self):
         x = Task.get_or_create(self.signal, dict(some_kwarg='foo'))
