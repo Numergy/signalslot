@@ -1,6 +1,6 @@
 import sys
 import eventlet
-import contextlib
+import contexter
 
 
 class Task(object):
@@ -26,7 +26,7 @@ class Task(object):
     def __call__(self, semaphores=None):
         semaphores = semaphores or []
 
-        with contextlib.nested(self.task_semaphore, *semaphores):
+        with contexter.Contexter(self.task_semaphore, *semaphores):
             result = self._do()
 
         if result:
