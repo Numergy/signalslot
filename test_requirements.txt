@@ -6,4 +6,4 @@ pytest-cov
 pytest-pep8
 pytest-sugar
 pytest-xdist
-coverage
+coverage==3.7.1

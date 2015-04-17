@@ -1,6 +1,6 @@
 import sys
 import eventlet
-import contextlib
+import contexter
 
 
 class Task(object):
@@ -26,7 +26,7 @@ class Task(object):
     def __call__(self, semaphores=None):
         semaphores = semaphores or []
 
-        with contextlib.nested(self.task_semaphore, *semaphores):
+        with contexter.Contexter(self.task_semaphore, *semaphores):
             result = self._do()
 
         if result:
@@ -60,7 +60,7 @@ class Task(object):
             self.logger.exception('[%s] Raised exception: %s' % (
                 self, e_value))
         else:
-            raise e_type, e_value, e_traceback
+            raise e_type(e_value).with_traceback(e_traceback)
 
     def _emit(self):
         if self.logger:
@@ -70,5 +70,5 @@ class Task(object):
     def __eq__(self, other):
         return (self.signal == other.signal and self.kwargs == other.kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s: %s' % (self.signal.__class__.__name__, self.kwargs)
