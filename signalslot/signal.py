@@ -3,9 +3,18 @@ Module defining the Signal class.
 """
 
 import inspect
+import threading
 
 from . import exceptions
 
+class DummyLock(object):
+    """
+    Class that implements a no-op instead of a re-entrant lock.
+    """
+    def __enter__(self):
+        pass
+    def __exit__(self):
+        pass
 
 class Signal(object):
     """
@@ -45,8 +54,9 @@ class Signal(object):
     >>> conf_pre_load.is_connected(yourmodule_conf)
     False
     """
-    def __init__(self, args=None, name=None):
+    def __init__(self, args=None, name=None, threadsafe=False):
         self.slots = []
+        self.slots_lk = threading.RLock() if threadsafe else DummyLock()
         self.args = args or []
         self.name = name
 
@@ -57,21 +67,24 @@ class Signal(object):
         if inspect.getargspec(slot).keywords is None:
             raise exceptions.SlotMustAcceptKeywords(self, slot)
 
-        if not self.is_connected(slot):
-            self.slots.append(slot)
+        with self.slots_lk:
+            if not self.is_connected(slot):
+                self.slots.append(slot)
 
     def is_connected(self, slot):
         """
         Check if a callback ``slot`` is connected to this signal.
         """
-        return slot in self.slots
+        with self.slots_lk:
+            return slot in self.slots
 
     def disconnect(self, slot):
         """
         Disconnect a slot from a signal if it is connected else do nothing.
         """
-        if self.is_connected(slot):
-            self.slots.pop(self.slots.index(slot))
+        with self.slots_lk:
+            if self.is_connected(slot):
+                self.slots.pop(self.slots.index(slot))
 
     def emit(self, **kwargs):
         """
@@ -93,7 +106,9 @@ class Signal(object):
         >>> need_something.emit()
         'got something'
         """
-        for slot in self.slots:
+        with self.slots_lk:
+            slots = list(self.slots)
+        for slot in slots:
             result = slot(**kwargs)
 
             if result is not None:
@@ -117,7 +132,11 @@ class Signal(object):
         >>> a == b
         True
         """
-        return self.slots == other.slots
+        with self.slots_lk:
+            my_slots = list(self.slots)
+        with other.slots_lk:
+            other_slots = list(other.slots)
+        return my_slots == other_slots
 
     def __repr__(self):
         return '<signalslot.Signal: %s>' % (self.name or 'NO_NAME')
