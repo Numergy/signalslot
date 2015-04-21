@@ -1,7 +1,7 @@
 import pytest
 import mock
 
-from signalslot import Signal, SlotMustAcceptKeywords
+from signalslot import Signal, SlotMustAcceptKeywords, Slot
 
 
 @mock.patch('signalslot.signal.inspect')
@@ -100,7 +100,7 @@ class MyTestError(Exception):
 
 class TestException(object):
     def setup_method(self, method):
-        self.signal = Signal()
+        self.signal = Signal(threadsafe=False)
         self.seen_exception = False
 
         def failing_slot(**args):
@@ -115,3 +115,62 @@ class TestException(object):
             self.seen_exception = True
 
         assert self.seen_exception
+
+class TestStrongSlot(object):
+    def setup_method(self, method):
+        self.called = False
+        def slot(**kwargs):
+            self.called = True
+        self.slot   = Slot(slot)
+
+    def test_alive(self):
+        assert self.slot.is_alive
+
+    def test_call(self):
+        self.slot(testing=1234)
+        assert self.called
+
+class TestWeakFuncSlot(object):
+    def setup_method(self, method):
+        self.called = False
+        def slot(**kwargs):
+            self.called = True
+
+        self.slot       = Slot(slot, weak=True)
+        self.slot_ref   = slot
+
+    def test_alive(self):
+        assert self.slot.is_alive
+
+    def test_call(self):
+        self.slot(testing=1234)
+        assert self.called
+
+    def test_gc(self):
+        self.slot_ref   = None
+        assert not self.slot.is_alive
+        self.slot(testing=1234)
+
+class TestWeakMethodSlot(object):
+    def setup_method(self, method):
+
+        class MyObject(object):
+            def __init__(self):
+                self.called = False
+            def slot(self, **kwargs):
+                self.called = True
+
+        self.obj_ref    = MyObject()
+        self.slot       = Slot(self.obj_ref.slot, weak=True)
+
+    def test_alive(self):
+        assert self.slot.is_alive
+
+    def test_call(self):
+        self.slot(testing=1234)
+        assert self.obj_ref.called
+
+    def test_gc(self):
+        self.obj_ref   = None
+        assert not self.slot.is_alive
+        self.slot(testing=1234)
