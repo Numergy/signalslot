@@ -7,17 +7,19 @@ import threading
 
 from . import exceptions
 
+
 class DummyLock(object):
     """
     Class that implements a no-op instead of a re-entrant lock.
     """
+
     def __enter__(self):
         pass
+
     def __exit__(self, exc_type, exc_value, traceback):
-        if (exc_type is not None) or \
-                (exc_value is not None) or \
-                (traceback is not None):
+        if exc_type is not None:
             raise exc_type, exc_value, traceback
+
 
 class Signal(object):
     """
