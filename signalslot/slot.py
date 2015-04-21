@@ -6,9 +6,10 @@ import types
 import weakref
 import sys
 
-if sys.version_info < (3, 4):
+# We cannot test a branch for Python >= 3.4 in Python < 3.4.
+if sys.version_info < (3, 4): # pragma: no cover
     from weakrefmethod import WeakMethod
-else:
+else: # pragma: no cover
     from weakref import WeakMethod
 
 
@@ -59,4 +60,9 @@ class Slot(object):
         return self.func == other.func
 
     def __repr__(self):
-        return '<signalslot.Slot: %s>' % (self.func or 'dead')
+        fn = self.func
+        if fn is None:
+            fn = 'dead'
+        else:
+            fn = repr(fn)
+        return '<signalslot.Slot: %s>' % fn
