@@ -1,5 +1,6 @@
 import pytest
 import mock
+import logging
 import eventlet
 import time
 from signalslot import Signal
@@ -13,7 +14,7 @@ class TestTask(object):
         self.signal = mock.Mock()
 
     def get_task_mock(self, *methods):
-        task_mock = Task(self.signal)
+        task_mock = Task(self.signal, logger=logging.getLogger('TestTask'))
 
         for method in methods:
             setattr(task_mock, method, mock.Mock())
