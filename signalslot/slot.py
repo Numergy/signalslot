@@ -2,14 +2,15 @@
 Module defining the Slot class.
 """
 
+import types
+import weakref
 import sys
+
 if sys.version_info < (3, 4):
     from weakrefmethod import WeakMethod
 else:
     from weakref import WeakMethod
 
-import weakref
-import types
 
 class Slot(object):
     """
@@ -32,7 +33,7 @@ class Slot(object):
         Return True if this slot is "alive".
         """
         return (not self._weak) or (self._slot() is not None)
-    
+
     @property
     def func(self):
         """
@@ -60,9 +61,11 @@ class Slot(object):
     def __repr__(self):
         return '<signalslot.Slot: %s>' % (self.func or 'dead')
 
+
 try:
     # Support for Tornado IOLoop slots
     import tornado
+
     class TornadoSlot(Slot):
         """
         A TornadoSlot is a Slot subclass that allows for calling a method
@@ -83,8 +86,8 @@ try:
               IOLoop is the current IOLoop, the function is called directly.
             """
             super(TornadoSlot, self).__init__(slot, weak)
-            self._io_loop   = io_loop
-            self._blocking  = blocking
+            self._io_loop = io_loop
+            self._blocking = blocking
 
         def __call__(self, **kwargs):
             func = self.func
@@ -97,17 +100,20 @@ try:
                     return func(**kwargs)
                 else:
                     class PoorMansFuture(object):
+
                         def __init__(self, func):
-                            self.func       = func
-                            self.event      = threading.Event()
-                            self.value      = None
-                            self.exc_info   = None
+                            self.func = func
+                            self.event = threading.Event()
+                            self.value = None
+                            self.exc_info = None
+
                         def run(self, **kwargs):
                             try:
-                                self.value      = self.func(**kwargs)
+                                self.value = self.func(**kwargs)
                             except:
-                                self.exc_info   = sys.exc_info()
+                                self.exc_info = sys.exc_info()
                             self.event.set()
+
                         def spawn(self, io_loop):
                             io_loop.add_callback(self.run, **kwargs)
                             self.event.wait()
