@@ -15,7 +15,8 @@ class SlotMustAcceptKeywords(SignalSlotException):
         super(SlotMustAcceptKeywords, self).__init__(m)
 
 
-class QueueCantQueueNonSignalInstance(SignalSlotException):
+# Not yet being used.
+class QueueCantQueueNonSignalInstance(SignalSlotException):  # pragma: no cover
     """
     Raised when trying to queue something else than a
     :py:class:`~signalslot.signal.Signal` instance.
