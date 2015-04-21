@@ -6,6 +6,8 @@ import types
 import weakref
 import sys
 
+from .signal import BaseSlot
+
 # We cannot test a branch for Python >= 3.4 in Python < 3.4.
 if sys.version_info < (3, 4): # pragma: no cover
     from weakrefmethod import WeakMethod
@@ -13,7 +15,7 @@ else: # pragma: no cover
     from weakref import WeakMethod
 
 
-class Slot(object):
+class Slot(BaseSlot):
     """
     A slot is a callable object that manages a connection to a signal.
     If weak is true or the slot is a subclass of weakref.ref, the slot

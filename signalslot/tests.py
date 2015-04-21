@@ -164,18 +164,20 @@ class TestWeakMethodSlot(object):
 
         self.obj_ref    = MyObject()
         self.slot       = Slot(self.obj_ref.slot, weak=True)
+        self.signal     = Signal()
+        self.signal.connect(self.slot)
 
     def test_alive(self):
         assert self.slot.is_alive
 
     def test_call(self):
-        self.slot(testing=1234)
+        self.signal.emit(testing=1234)
         assert self.obj_ref.called
 
     def test_gc(self):
         self.obj_ref   = None
         assert not self.slot.is_alive
-        self.slot(testing=1234)
+        self.signal.emit(testing=1234)
 
 class TestSlotEq(object):
     def setup_method(self, method):

@@ -20,6 +20,13 @@ class DummyLock(object):
         pass
 
 
+class BaseSlot(object):
+    """
+    Slot abstract class for type resolution purposes.
+    """
+    pass
+
+
 class Signal(object):
     """
     Define a signal by instanciating a :py:class:`Signal` object, ie.:
@@ -70,13 +77,21 @@ class Signal(object):
         Return a list of slots for this signal.
         """
         with self._slots_lk:
-            return list(self._slots)
+            # Do a slot clean-up
+            slots = []
+            for s in self._slots:
+                if isinstance(s, BaseSlot) and (not s.is_alive):
+                    continue
+                slots.append(s)
+            self._slots = slots
+            return list(slots)
 
     def connect(self, slot):
         """
         Connect a callback ``slot`` to this signal.
         """
-        if inspect.getargspec(slot).keywords is None:
+        if not isinstance(slot, BaseSlot) and \
+                inspect.getargspec(slot).keywords is None:
             raise exceptions.SlotMustAcceptKeywords(self, slot)
 
         with self._slots_lk:
