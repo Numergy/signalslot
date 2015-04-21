@@ -2,7 +2,9 @@
 [run]
 branch = True
 source = signalslot
-include = ./signalslot*
+omit =
+	*/tests.py
+	*/test.py
 
 [report]
 ignore_errors = True
