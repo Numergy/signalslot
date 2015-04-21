@@ -3,7 +3,7 @@ Module defining the Slot class.
 """
 
 import sys
-if sys.version_info < (3,4):
+if sys.version_info < (3, 4):
     from weakrefmethod import WeakMethod
 else:
     from weakref import WeakMethod
@@ -26,11 +26,12 @@ class Slot(object):
                 slot = weakref.ref(slot)
         self._slot = slot
 
+    @property
     def is_alive(self):
         """
         Return True if this slot is "alive".
         """
-        return (not self.weak) or (self._slot() is not None)
+        return (not self._weak) or (self._slot() is not None)
     
     @property
     def func(self):
