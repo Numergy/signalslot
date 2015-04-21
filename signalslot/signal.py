@@ -16,9 +16,8 @@ class DummyLock(object):
     def __enter__(self):
         pass
 
-    def __exit__(self, exc_type, exc_value, traceback):
-        if exc_type is not None:
-            raise exc_type, exc_value, traceback
+    def __exit__(self, exc_type=None, exc_value=None, traceback=None):
+        pass
 
 
 class Signal(object):
