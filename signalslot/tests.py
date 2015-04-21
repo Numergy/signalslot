@@ -95,8 +95,10 @@ class TestSignalConnect(object):
         with pytest.raises(SlotMustAcceptKeywords):
             self.signal.connect(cb)
 
+
 class MyTestError(Exception):
     pass
+
 
 class TestException(object):
     def setup_method(self, method):
@@ -116,12 +118,15 @@ class TestException(object):
 
         assert self.seen_exception
 
+
 class TestStrongSlot(object):
     def setup_method(self, method):
         self.called = False
+
         def slot(**kwargs):
             self.called = True
-        self.slot   = Slot(slot)
+
+        self.slot = Slot(slot)
 
     def test_alive(self):
         assert self.slot.is_alive
@@ -130,14 +135,16 @@ class TestStrongSlot(object):
         self.slot(testing=1234)
         assert self.called
 
+
 class TestWeakFuncSlot(object):
     def setup_method(self, method):
         self.called = False
+
         def slot(**kwargs):
             self.called = True
 
-        self.slot       = Slot(slot, weak=True)
-        self.slot_ref   = slot
+        self.slot = Slot(slot, weak=True)
+        self.slot_ref = slot
 
     def test_alive(self):
         assert self.slot.is_alive
@@ -148,23 +155,26 @@ class TestWeakFuncSlot(object):
         assert self.called
 
     def test_gc(self):
-        self.slot_ref   = None
+        self.slot_ref = None
         assert not self.slot.is_alive
         assert repr(self.slot) == '<signalslot.Slot: dead>'
         self.slot(testing=1234)
+
 
 class TestWeakMethodSlot(object):
     def setup_method(self, method):
 
         class MyObject(object):
+
             def __init__(self):
                 self.called = False
+
             def slot(self, **kwargs):
                 self.called = True
 
-        self.obj_ref    = MyObject()
-        self.slot       = Slot(self.obj_ref.slot, weak=True)
-        self.signal     = Signal()
+        self.obj_ref = MyObject()
+        self.slot = Slot(self.obj_ref.slot, weak=True)
+        self.signal = Signal()
         self.signal.connect(self.slot)
 
     def test_alive(self):
@@ -175,9 +185,10 @@ class TestWeakMethodSlot(object):
         assert self.obj_ref.called
 
     def test_gc(self):
-        self.obj_ref   = None
+        self.obj_ref = None
         assert not self.slot.is_alive
         self.signal.emit(testing=1234)
+
 
 class TestSlotEq(object):
     def setup_method(self, method):
