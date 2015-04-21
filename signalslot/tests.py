@@ -141,6 +141,7 @@ class TestWeakFuncSlot(object):
 
     def test_alive(self):
         assert self.slot.is_alive
+        assert repr(self.slot) == '<signalslot.Slot: %s>' % repr(self.slot_ref)
 
     def test_call(self):
         self.slot(testing=1234)
@@ -149,6 +150,7 @@ class TestWeakFuncSlot(object):
     def test_gc(self):
         self.slot_ref   = None
         assert not self.slot.is_alive
+        assert repr(self.slot) == '<signalslot.Slot: dead>'
         self.slot(testing=1234)
 
 class TestWeakMethodSlot(object):
@@ -174,3 +176,13 @@ class TestWeakMethodSlot(object):
         self.obj_ref   = None
         assert not self.slot.is_alive
         self.slot(testing=1234)
+
+class TestSlotEq(object):
+    def setup_method(self, method):
+        def slot(**kwargs):
+            pass
+        self.slot_a = Slot(slot, weak=False)
+        self.slot_b = Slot(slot, weak=True)
+
+    def test_eq(self):
+        assert self.slot_a == self.slot_b
