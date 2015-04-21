@@ -7,7 +7,7 @@ from signalslot import Signal, SlotMustAcceptKeywords
 @mock.patch('signalslot.signal.inspect')
 class TestSignal(object):
     def setup_method(self, method):
-        self.signal_a = Signal()
+        self.signal_a = Signal(threadsafe=True)
         self.signal_b = Signal(args=['foo'])
 
         self.slot_a = mock.Mock(spec=lambda **kwargs: None)
@@ -94,3 +94,24 @@ class TestSignalConnect(object):
 
         with pytest.raises(SlotMustAcceptKeywords):
             self.signal.connect(cb)
+
+class MyTestError(Exception):
+    pass
+
+class TestException(object):
+    def setup_method(self, method):
+        self.signal = Signal()
+        self.seen_exception = False
+
+        def failing_slot(**args):
+            raise MyTestError('die!')
+
+        self.signal.connect(failing_slot)
+
+    def test_emit_exception(self):
+        try:
+            self.signal.emit()
+        except MyTestError:
+            self.seen_exception = True
+
+        assert self.seen_exception
