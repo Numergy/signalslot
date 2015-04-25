@@ -22,31 +22,40 @@ class TestTask(object):
         return task_mock
 
     def test_eq(self):
-        x = Task(self.signal, dict(some_kwarg='foo'))
-        y = Task(self.signal, dict(some_kwarg='foo'))
+        x = Task(self.signal, dict(some_kwarg='foo'),
+                 logger=logging.getLogger('TaskX'))
+        y = Task(self.signal, dict(some_kwarg='foo'),
+                 logger=logging.getLogger('TaskY'))
 
         assert x == y
 
     def test_not_eq(self):
-        x = Task(self.signal, dict(some_kwarg='foo'))
-        y = Task(self.signal, dict(some_kwarg='bar'))
+        x = Task(self.signal, dict(some_kwarg='foo',
+                 logger=logging.getLogger('TaskX')))
+        y = Task(self.signal, dict(some_kwarg='bar',
+                 logger=logging.getLogger('TaskY')))
 
         assert x != y
 
     def test_unicode(self):
-        t = Task(self.signal, dict(some_kwarg='foo'))
+        t = Task(self.signal, dict(some_kwarg='foo'),
+                 logger=logging.getLogger('TaskT'))
 
         assert str(t) == "Mock: {'some_kwarg': 'foo'}"
 
     def test_get_or_create_gets(self):
-        x = Task.get_or_create(self.signal, dict(some_kwarg='foo'))
-        y = Task.get_or_create(self.signal, dict(some_kwarg='foo'))
+        x = Task.get_or_create(self.signal, dict(some_kwarg='foo'),
+                               logger=logging.getLogger('TaskX'))
+        y = Task.get_or_create(self.signal, dict(some_kwarg='foo'),
+                               logger=logging.getLogger('TaskY'))
 
         assert x is y
 
     def test_get_or_create_creates(self):
-        x = Task.get_or_create(self.signal, dict(some_kwarg='foo'))
-        y = Task.get_or_create(self.signal, dict(some_kwarg='bar'))
+        x = Task.get_or_create(self.signal, dict(some_kwarg='foo'),
+                               logger=logging.getLogger('TaskX'))
+        y = Task.get_or_create(self.signal, dict(some_kwarg='bar'),
+                               logger=logging.getLogger('TaskY'))
 
         assert x is not y
 
@@ -99,8 +108,10 @@ class TestTask(object):
         signal = Signal('tost')
         signal.connect(slot)
 
-        x = Task.get_or_create(signal, dict(some_kwarg='foo'))
-        y = Task.get_or_create(signal, dict(some_kwarg='foo'))
+        x = Task.get_or_create(signal, dict(some_kwarg='foo'),
+                               logger=logging.getLogger('TaskX'))
+        y = Task.get_or_create(signal, dict(some_kwarg='foo'),
+                               logger=logging.getLogger('TaskY'))
 
         eventlet.spawn(x)
         time.sleep(.1)
