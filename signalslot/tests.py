@@ -192,10 +192,14 @@ class TestWeakMethodSlot(object):
 
 class TestSlotEq(object):
     def setup_method(self, method):
-        def slot(**kwargs):
-            pass
-        self.slot_a = Slot(slot, weak=False)
-        self.slot_b = Slot(slot, weak=True)
+        self.slot_a = Slot(self.slot, weak=False)
+        self.slot_b = Slot(self.slot, weak=True)
 
-    def test_eq(self):
+    def slot(self, **kwargs):
+        pass
+
+    def test_eq_other(self):
         assert self.slot_a == self.slot_b
+
+    def test_eq_func(self):
+        assert self.slot_a == self.slot

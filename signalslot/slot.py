@@ -59,7 +59,10 @@ class Slot(BaseSlot):
         """
         Compare this slot to another.
         """
-        return self.func == other.func
+        if isinstance(other, BaseSlot):
+            return self.func == other.func
+        else:
+            return self.func == other
 
     def __repr__(self):
         fn = self.func
