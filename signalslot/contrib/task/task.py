@@ -1,6 +1,7 @@
 import sys
 import eventlet
 import contexter
+import six
 
 
 class Task(object):
@@ -60,7 +61,7 @@ class Task(object):
             self.logger.exception('[%s] Raised exception: %s' % (
                 self, e_value))
         else:
-            raise e_type, e_value, e_traceback
+            six.reraise(e_type, e_value, e_traceback)
 
     def _emit(self):
         if self.logger:
