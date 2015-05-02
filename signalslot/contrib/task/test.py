@@ -13,8 +13,12 @@ class TestTask(object):
     def setup_method(self, method):
         self.signal = mock.Mock()
 
-    def get_task_mock(self, *methods):
-        task_mock = Task(self.signal, logger=logging.getLogger('TestTask'))
+    def get_task_mock(self, *methods, **kwargs):
+        if kwargs.get('logger'):
+            log = logging.getLogger('TestTask')
+        else:
+            log = None
+        task_mock = Task(self.signal, logger=log)
 
         for method in methods:
             setattr(task_mock, method, mock.Mock())
@@ -77,6 +81,21 @@ class TestTask(object):
 
         self.signal.emit.assert_called_once_with()
 
+    def test_do_emit_nolog(self):
+        task_mock = self.get_task_mock(
+                '_clean', '_exception', '_completed', logging=True)
+
+        task_mock._do()
+
+        self.signal.emit.assert_called_once_with()
+
+    def test_do_emit_no_log(self):
+        task_mock = self.get_task_mock('_clean', '_exception', '_completed')
+
+        task_mock._do()
+
+        self.signal.emit.assert_called_once_with()
+
     def test_do_complete(self):
         task_mock = self.get_task_mock('_clean', '_exception', '_completed')
 
@@ -86,9 +105,23 @@ class TestTask(object):
         task_mock._completed.assert_called_once_with()
         task_mock._clean.assert_called_once_with()
 
+    def test_do_success(self):
+        task_mock = self.get_task_mock()
+        assert task_mock._do() == True
+
+    def test_do_failure_nolog(self):
+        task_mock = self.get_task_mock('_emit')
+        task_mock._emit.side_effect = Exception()
+        assert task_mock._do() == False
+
+    def test_do_failure_withlog(self):
+        task_mock = self.get_task_mock('_emit', logger=True)
+        task_mock._emit.side_effect = Exception()
+        assert task_mock._do() == False
+
     def test_do_exception(self):
-        task_mock = self.get_task_mock('_clean', '_exception', '_completed',
-                                       '_emit')
+        task_mock = self.get_task_mock(
+                '_clean', '_exception', '_completed', '_emit')
 
         task_mock._emit.side_effect = Exception()
 
