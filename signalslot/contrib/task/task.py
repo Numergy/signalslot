@@ -60,7 +60,7 @@ class Task(object):
             self.logger.exception('[%s] Raised exception: %s' % (
                 self, e_value))
         else:
-            raise e_type(e_value).with_traceback(e_traceback)
+            raise e_type, e_value, e_traceback
 
     def _emit(self):
         if self.logger:

@@ -110,9 +110,19 @@ class TestTask(object):
         assert task_mock._do() == True
 
     def test_do_failure_nolog(self):
+        # Our dummy exception
+        class DummyError(Exception):
+            pass
+
         task_mock = self.get_task_mock('_emit')
-        task_mock._emit.side_effect = Exception()
-        assert task_mock._do() == False
+        task_mock._emit.side_effect = DummyError()
+
+        # This will throw an exception at us, be ready to catch it.
+        try:
+            task_mock._do()
+            assert False
+        except DummyError:
+            pass
 
     def test_do_failure_withlog(self):
         task_mock = self.get_task_mock('_emit', logger=True)
