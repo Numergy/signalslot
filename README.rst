@@ -6,6 +6,8 @@
     :target: https://crate.io/packages/signalslot
 .. image:: https://coveralls.io/repos/Numergy/signalslot/badge.png 
     :target: https://coveralls.io/r/Numergy/signalslot
+.. image:: https://readthedocs.org/projects/signalslot/badge/?version=latest
+    :target: https://signalslot.readthedocs.org/en/latest
 
 signalslot: simple Signal/Slot implementation for Python
 ========================================================
