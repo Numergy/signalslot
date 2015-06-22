@@ -3,8 +3,28 @@ Module defining the Signal class.
 """
 
 import inspect
+import threading
 
 from . import exceptions
+
+
+class DummyLock(object):
+    """
+    Class that implements a no-op instead of a re-entrant lock.
+    """
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type=None, exc_value=None, traceback=None):
+        pass
+
+
+class BaseSlot(object):
+    """
+    Slot abstract class for type resolution purposes.
+    """
+    pass
 
 
 class Signal(object):
@@ -45,33 +65,53 @@ class Signal(object):
     >>> conf_pre_load.is_connected(yourmodule_conf)
     False
     """
-    def __init__(self, args=None, name=None):
-        self.slots = []
+    def __init__(self, args=None, name=None, threadsafe=False):
+        self._slots = []
+        self._slots_lk = threading.RLock() if threadsafe else DummyLock()
         self.args = args or []
         self.name = name
+
+    @property
+    def slots(self):
+        """
+        Return a list of slots for this signal.
+        """
+        with self._slots_lk:
+            # Do a slot clean-up
+            slots = []
+            for s in self._slots:
+                if isinstance(s, BaseSlot) and (not s.is_alive):
+                    continue
+                slots.append(s)
+            self._slots = slots
+            return list(slots)
 
     def connect(self, slot):
         """
         Connect a callback ``slot`` to this signal.
         """
-        if inspect.getargspec(slot).keywords is None:
+        if not isinstance(slot, BaseSlot) and \
+                inspect.getargspec(slot).keywords is None:
             raise exceptions.SlotMustAcceptKeywords(self, slot)
 
-        if not self.is_connected(slot):
-            self.slots.append(slot)
+        with self._slots_lk:
+            if not self.is_connected(slot):
+                self._slots.append(slot)
 
     def is_connected(self, slot):
         """
         Check if a callback ``slot`` is connected to this signal.
         """
-        return slot in self.slots
+        with self._slots_lk:
+            return slot in self._slots
 
     def disconnect(self, slot):
         """
         Disconnect a slot from a signal if it is connected else do nothing.
         """
-        if self.is_connected(slot):
-            self.slots.pop(self.slots.index(slot))
+        with self._slots_lk:
+            if self.is_connected(slot):
+                self._slots.pop(self._slots.index(slot))
 
     def emit(self, **kwargs):
         """

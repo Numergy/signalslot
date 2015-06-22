@@ -1,13 +1,13 @@
 import pytest
 import mock
 
-from signalslot import Signal, SlotMustAcceptKeywords
+from signalslot import Signal, SlotMustAcceptKeywords, Slot
 
 
 @mock.patch('signalslot.signal.inspect')
 class TestSignal(object):
     def setup_method(self, method):
-        self.signal_a = Signal()
+        self.signal_a = Signal(threadsafe=True)
         self.signal_b = Signal(args=['foo'])
 
         self.slot_a = mock.Mock(spec=lambda **kwargs: None)
@@ -94,3 +94,112 @@ class TestSignalConnect(object):
 
         with pytest.raises(SlotMustAcceptKeywords):
             self.signal.connect(cb)
+
+
+class MyTestError(Exception):
+    pass
+
+
+class TestException(object):
+    def setup_method(self, method):
+        self.signal = Signal(threadsafe=False)
+        self.seen_exception = False
+
+        def failing_slot(**args):
+            raise MyTestError('die!')
+
+        self.signal.connect(failing_slot)
+
+    def test_emit_exception(self):
+        try:
+            self.signal.emit()
+        except MyTestError:
+            self.seen_exception = True
+
+        assert self.seen_exception
+
+
+class TestStrongSlot(object):
+    def setup_method(self, method):
+        self.called = False
+
+        def slot(**kwargs):
+            self.called = True
+
+        self.slot = Slot(slot)
+
+    def test_alive(self):
+        assert self.slot.is_alive
+
+    def test_call(self):
+        self.slot(testing=1234)
+        assert self.called
+
+
+class TestWeakFuncSlot(object):
+    def setup_method(self, method):
+        self.called = False
+
+        def slot(**kwargs):
+            self.called = True
+
+        self.slot = Slot(slot, weak=True)
+        self.slot_ref = slot
+
+    def test_alive(self):
+        assert self.slot.is_alive
+        assert repr(self.slot) == '<signalslot.Slot: %s>' % repr(self.slot_ref)
+
+    def test_call(self):
+        self.slot(testing=1234)
+        assert self.called
+
+    def test_gc(self):
+        self.slot_ref = None
+        assert not self.slot.is_alive
+        assert repr(self.slot) == '<signalslot.Slot: dead>'
+        self.slot(testing=1234)
+
+
+class TestWeakMethodSlot(object):
+    def setup_method(self, method):
+
+        class MyObject(object):
+
+            def __init__(self):
+                self.called = False
+
+            def slot(self, **kwargs):
+                self.called = True
+
+        self.obj_ref = MyObject()
+        self.slot = Slot(self.obj_ref.slot, weak=True)
+        self.signal = Signal()
+        self.signal.connect(self.slot)
+
+    def test_alive(self):
+        assert self.slot.is_alive
+
+    def test_call(self):
+        self.signal.emit(testing=1234)
+        assert self.obj_ref.called
+
+    def test_gc(self):
+        self.obj_ref = None
+        assert not self.slot.is_alive
+        self.signal.emit(testing=1234)
+
+
+class TestSlotEq(object):
+    def setup_method(self, method):
+        self.slot_a = Slot(self.slot, weak=False)
+        self.slot_b = Slot(self.slot, weak=True)
+
+    def slot(self, **kwargs):
+        pass
+
+    def test_eq_other(self):
+        assert self.slot_a == self.slot_b
+
+    def test_eq_func(self):
+        assert self.slot_a == self.slot

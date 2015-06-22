@@ -5,7 +5,7 @@ env:
   - TOX_ENV=pep8
   - TOX_ENV=py34
 install:
-  - pip install tox coveralls
+  - pip install tox coveralls weakrefmethod
 script:
   - tox -e $TOX_ENV
 after_success:

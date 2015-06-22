@@ -7,3 +7,4 @@ pytest-pep8
 pytest-sugar
 pytest-xdist
 coverage==3.7.1
+weakrefmethod
