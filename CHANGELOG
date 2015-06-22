@@ -1,6 +1,8 @@
-0.0.11: Support for Python 3.4
+0.1.0 Thread safety. Slot class.
 
-0.0.10: Added a name property to Signal for logging purposes
+0.0.11 Support for Python 3.4
+
+0.0.10 Added a name property to Signal for logging purposes
 
 0.0.9 Bugfixes on Task
 
