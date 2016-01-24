@@ -21,6 +21,7 @@ setup(
     install_requires=[
         'six',
         'contexter',
+        'weakrefmethod',
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
