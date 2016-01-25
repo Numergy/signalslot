@@ -137,7 +137,7 @@ class TestTask(object):
 
         task_mock._do()
 
-        task_mock._exception.assert_call_once_with(
+        task_mock._exception.assert_called_once_with(
             Exception, task_mock._emit.side_effect, mock.ANY)
 
         task_mock._completed.assert_not_called()
