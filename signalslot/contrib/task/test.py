@@ -107,7 +107,7 @@ class TestTask(object):
 
     def test_do_success(self):
         task_mock = self.get_task_mock()
-        assert task_mock._do() == True
+        assert task_mock._do() is True
 
     def test_do_failure_nolog(self):
         # Our dummy exception
@@ -127,7 +127,7 @@ class TestTask(object):
     def test_do_failure_withlog(self):
         task_mock = self.get_task_mock('_emit', logger=True)
         task_mock._emit.side_effect = Exception()
-        assert task_mock._do() == False
+        assert task_mock._do() is False
 
     def test_do_exception(self):
         task_mock = self.get_task_mock(
@@ -137,7 +137,7 @@ class TestTask(object):
 
         task_mock._do()
 
-        task_mock._exception.assert_call_once_with(
+        task_mock._exception.assert_called_once_with(
             Exception, task_mock._emit.side_effect, mock.ANY)
 
         task_mock._completed.assert_not_called()
