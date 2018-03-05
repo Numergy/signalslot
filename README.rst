@@ -1,8 +1,8 @@
 .. image:: https://secure.travis-ci.org/Numergy/signalslot.png?branch=master
     :target: http://travis-ci.org/Numergy/signalslot
-.. image:: https://pypip.in/d/signalslot/badge.png
+.. image:: https://img.shields.io/pypi/dm/signalslot.svg
     :target: https://crate.io/packages/signalslot
-.. image:: https://pypip.in/v/signalslot/badge.png   
+.. image:: https://img.shields.io/pypi/v/signalslot.svg   
     :target: https://crate.io/packages/signalslot
 .. image:: https://coveralls.io/repos/Numergy/signalslot/badge.png 
     :target: https://coveralls.io/r/Numergy/signalslot
