@@ -2,7 +2,7 @@ mock
 eventlet
 pep8
 pytest
-pytest-cov
+pytest-cov<2.6
 pytest-pep8
 pytest-sugar
 pytest-xdist
