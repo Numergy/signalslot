@@ -1,3 +1,5 @@
+0.1.2 Clarified MIT License
+
 0.1.1 Add missing weakrefmethod dependency.
 
 0.1.0 Thread safety. Slot class.
