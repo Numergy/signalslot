@@ -7,4 +7,4 @@ except ImportError:  # pragma: no cover
     # the __version__ string only.
     pass
 
-__version__ = '0.1.2'
+__version__ = '0.2.0'
