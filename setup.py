@@ -21,8 +21,8 @@ setup(
     install_requires=[
         'six',
         'contexter',
-        'weakrefmethod',
     ],
+    python_requires='>=3.4',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
@@ -34,4 +34,3 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )
-
